@@ -1,0 +1,103 @@
+input {
+    box-sizing: border-box;
+}
+
+.todo {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.column {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 30%;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.column h2 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.card {
+    background-color: #e0e0e0;
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 10px;
+    transition: background-color 0.3s;
+}
+
+.card:hover {
+    background-color: #d0d0d0;
+}
+
+.dialog {
+    border: none;
+}
+
+.dialog h2 {
+    margin: 0;
+}
+
+menu {
+    margin: 0;
+    padding: 0;
+}
+
+.dialog-content {
+    background-color: #fefefe;
+    border-radius: 5px;
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    margin-top: 10px;
+    padding: 10px 15px;
+    border: none;
+    background-color: #ff7700;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #ff9900;
+}
+
+
+@media (max-width: 1024px) {
+    .todo {
+        flex-direction: column;
+        gap: 24px;
+        padding: 0;
+        margin-top: 16px;
+    }
+    
+    .column {
+        width: 100%;
+    }
+}

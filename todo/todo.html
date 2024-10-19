@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="../dist/hamburgers.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="./page.css" />
+    <link rel="icon" href="../images/logo.ico" type="image/x-icon" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <title>Список задач</title>
+  </head>
+  <body class="container">
+    <header class="header">
+      <img src="../images/logo.svg" />
+      <nav class="header__navigation">
+        <ul id="navigation" class="header__navigation-list">
+          <li class="header__navigation-list-item">
+            <a href="../index.html">Главная</a>
+          </li>
+          <li class="header__navigation-list-item">
+            <a href="../projects.html">Проекты </a>
+          </li>
+          <li class="header__navigation-list-item">
+            <a
+              href="./todo.html"
+              onclick="event.preventDefault()"
+              class="active"
+              >Список задач</a
+            >
+          </li>
+          <li class="header__navigation-list-item">
+            <a href="../about.html">О приложении </a>
+          </li>
+        </ul>
+      </nav>
+      <div id="hamburger" class="hamburger hamburger--collapse hide">
+        <div class="hamburger-box">
+          <div class="hamburger-inner"></div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <button onclick="window.addTaskDialog.showModal()">
+        Добавить задачу
+      </button>
+      <div class="todo">
+        <div class="column">
+          <h2>Сделать</h2>
+          <div class="card">Задача 1</div>
+          <div class="card">Задача 2</div>
+        </div>
+        <div class="column">
+          <h2>В процессе</h2>
+          <div class="card">Задача 3</div>
+        </div>
+        <div class="column">
+          <h2>Сделано</h2>
+          <div class="card">Задача 4</div>
+        </div>
+      </div>
+
+      <dialog id="addTaskDialog" class="dialog">
+        <div class="dialog-content">
+          <span class="close-button" onclick="window.addTaskDialog.close()"
+            >&times;</span
+          >
+          <h2>Добавить задачу</h2>
+          <input type="text" id="taskInput" placeholder="Название задачи" />
+          <menu>
+            <button onclick="window.addTaskDialog.close()" id="saveTaskButton">
+              Сохранить
+            </button>
+            <button
+              onclick="window.addTaskDialog.close()"
+              id="cancel"
+              type="reset"
+            >
+              Отмена
+            </button>
+          </menu>
+        </div>
+      </dialog>
+    </main>
+
+    <script>
+      const dialog = document.getElementById("addTaskDialog");
+      const hamburger = document.getElementById("hamburger");
+      const navigation = document.getElementById("navigation");
+
+      hamburger.addEventListener("click", () => {
+        hamburger.classList.toggle("is-active");
+        navigation.classList.toggle("show");
+      });
+
+      dialog.addEventListener("click", (event) => {
+        if (event.target === dialog) {
+          dialog.close();
+        }
+      });
+    </script>
+  </body>
+</html>
