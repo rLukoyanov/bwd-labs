@@ -15,26 +15,28 @@
     <title>Главная</title>
   </head>
   <body class="container">
+    <script src="bundle.js"></script>
     <header class="header">
-      <img src="../images/logo.svg" />
+      <img src="./logo.svg" />
+      <img src="./images/logo.svg" />
       <nav class="header__navigation">
         <ul id="navigation" class="header__navigation-list">
           <li class="header__navigation-list-item">
             <a
-              href="../index.html"
+              href="./index.html"
               onclick="event.preventDefault()"
               class="active"
               >Главная</a
             >
           </li>
           <li class="header__navigation-list-item">
-            <a href="../projects.html">Проекты </a>
+            <a href="./projects.html">Проекты </a>
           </li>
           <li class="header__navigation-list-item">
-            <a href="./todo/todo.html">Список задач</a>
+            <a href="./todo.html">Список задач</a>
           </li>
           <li class="header__navigation-list-item">
-            <a href="../about.html">О приложении </a>
+            <a href="./about.html">О приложении </a>
           </li>
         </ul>
       </nav>
