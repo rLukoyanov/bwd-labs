@@ -15,26 +15,30 @@
     <title>Главная</title>
   </head>
   <body class="container">
+    <script src="bundle.js"></script>
     <header class="header">
       <img src="../images/logo.svg" />
       <nav class="header__navigation">
         <ul id="navigation" class="header__navigation-list">
           <li class="header__navigation-list-item">
-            <a href="../index.html">Главная</a>
+            <a href="./index.html">Главная</a>
+          </li>
+          <li class="header__navigation-list-item">
+            <a href="./projects.html">Проекты </a>
           </li>
           <li class="header__navigation-list-item">
             <a
-              href="../projects.html"
+              href="./todo.html"
+              >Список задач</a
+            >
+          </li>
+          <li class="header__navigation-list-item">
+            <a
+              href="./about.html"
               onclick="event.preventDefault()"
               class="active"
-              >Проекты
+              >О приложении
             </a>
-          </li>
-          <li class="header__navigation-list-item">
-            <a href="./todo/todo.html">Список задач</a>
-          </li>
-          <li class="header__navigation-list-item">
-            <a href="../about.html">О приложении </a>
           </li>
         </ul>
       </nav>
@@ -44,8 +48,12 @@
         </div>
       </div>
     </header>
-    <main class="error">
-      <img class="error-image" src="./images/404.svg" />
+    <main class="main">
+      <aside>
+        <h1>The Aesthetics</h1>
+        <p>Самая крутой туду лист от The Aesthetics</p>
+      </aside>
+      <img class="main-image" src="./images/mainImage.svg" />
     </main>
   </body>
   <script>
