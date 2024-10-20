@@ -1,5 +1,6 @@
 const path = require("path"); // Импортируем модуль "path" для работы с путями файлов
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const HtmlWebpackInlineSVGPlugin = require("html-webpack-inline-svg-plugin");
 
 module.exports = {
   entry: "./src/index.js", // Точка входа для сборки проекта
@@ -53,6 +54,7 @@ module.exports = {
       chunks: ["index"],
       filename: "todo.html",
     }),
+    new HtmlWebpackInlineSVGPlugin(),
   ],
 
   devServer: {
