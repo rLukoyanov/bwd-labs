@@ -53,16 +53,19 @@
       <div class="todo">
         <div class="column">
           <h2>Сделать</h2>
-          <div class="card">Задача 1</div>
-          <div class="card">Задача 2</div>
+          <div class="card">Задача 1 <button>Удалить</button></div>
+          <div class="card">Задача 2 <button>Удалить</button></div>
         </div>
         <div class="column">
           <h2>В процессе</h2>
-          <div class="card">Задача 3</div>
+          <div class="card">
+            Задача 3
+            <button>Удалить</button>
+          </div>
         </div>
         <div class="column">
           <h2>Сделано</h2>
-          <div class="card">Задача 4</div>
+          <div class="card">Задача 4 <button>Удалить</button></div>
         </div>
       </div>
 
@@ -96,7 +99,16 @@
 
       hamburger.addEventListener("click", () => {
         hamburger.classList.toggle("is-active");
-        navigation.classList.toggle("show");
+
+        // Убираем/добавляем класс show с небольшим временем задержки
+        if (navigation.classList.contains("show")) {
+          navigation.classList.remove("show");
+        } else {
+          navigation.style.display = "flex"; // Показываем перед добавлением класса
+          setTimeout(() => {
+            navigation.classList.add("show");
+          }, 10); // Небольшая задержка для запуска анимации
+        }
       });
 
       dialog.addEventListener("click", (event) => {
