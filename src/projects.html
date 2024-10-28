@@ -55,7 +55,16 @@
 
     hamburger.addEventListener("click", () => {
       hamburger.classList.toggle("is-active");
-      navigation.classList.toggle("show");
+
+      // Убираем/добавляем класс show с небольшим временем задержки
+      if (navigation.classList.contains("show")) {
+        navigation.classList.remove("show");
+      } else {
+        navigation.style.display = "flex"; // Показываем перед добавлением класса
+        setTimeout(() => {
+          navigation.classList.add("show");
+        }, 10); // Небольшая задержка для запуска анимации
+      }
     });
   </script>
 </html>
