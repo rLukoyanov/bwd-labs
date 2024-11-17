@@ -50,22 +50,16 @@
       <button onclick="window.addTaskDialog.showModal()">
         Добавить задачу
       </button>
-      <div class="todo">
-        <div class="column">
+      <button onclick="exportToICS()">Экспортировать задачи</button>
+      <div id="tasks" class="todo">
+        <div class="column" data-status="todo">
           <h2>Сделать</h2>
-          <div class="card">Задача 1 <button>Удалить</button></div>
-          <div class="card">Задача 2 <button>Удалить</button></div>
         </div>
-        <div class="column">
-          <h2>В процессе</h2>
-          <div class="card">
-            Задача 3
-            <button>Удалить</button>
-          </div>
+        <div class="column" data-status="in-progress">
+          <h2>В работе</h2>
         </div>
-        <div class="column">
+        <div class="column" data-status="done">
           <h2>Сделано</h2>
-          <div class="card">Задача 4 <button>Удалить</button></div>
         </div>
       </div>
 
@@ -76,10 +70,9 @@
           >
           <h2>Добавить задачу</h2>
           <input type="text" id="taskInput" placeholder="Название задачи" />
+          <input type="date" id="taskDate" placeholder="Дата выполнения" />
           <menu>
-            <button onclick="window.addTaskDialog.close()" id="saveTaskButton">
-              Сохранить
-            </button>
+            <button id="saveTaskButton">Сохранить</button>
             <button
               onclick="window.addTaskDialog.close()"
               id="cancel"
@@ -94,22 +87,133 @@
 
     <script>
       const dialog = document.getElementById("addTaskDialog");
-      const hamburger = document.getElementById("hamburger");
-      const navigation = document.getElementById("navigation");
+      const taskInput = document.getElementById("taskInput");
+      const taskDate = document.getElementById("taskDate");
+      const saveTaskButton = document.getElementById("saveTaskButton");
+      const columns = document.querySelectorAll(".column");
+      const TASKS_KEY = "tasks";
 
-      hamburger.addEventListener("click", () => {
-        hamburger.classList.toggle("is-active");
+      // Загружаем задачи из localStorage
+      function loadTasks() {
+        const tasks = JSON.parse(localStorage.getItem(TASKS_KEY)) || [];
+        columns.forEach((column) => {
+          column.innerHTML = `<h2>${
+            column.dataset.status === "todo"
+              ? "Сделать"
+              : column.dataset.status === "in-progress"
+              ? "В работе"
+              : "Сделано"
+          }</h2>`;
+        });
 
-        // Убираем/добавляем класс show с небольшим временем задержки
-        if (navigation.classList.contains("show")) {
-          navigation.classList.remove("show");
+        tasks.forEach((task, index) => {
+          const column = document.querySelector(
+            `.column[data-status="${task.status}"]`
+          );
+          if (!column) {
+            console.error(`Column with status ${task.status} not found`);
+            return;
+          }
+
+          const taskElement = document.createElement("div");
+          taskElement.classList.add("card");
+          taskElement.draggable = true;
+          taskElement.dataset.index = index;
+          taskElement.dataset.status = task.status;
+          taskElement.innerHTML = `
+      ${task.name} (Дата: ${task.date})
+      <button onclick="deleteTask(${index})">Удалить</button>
+    `;
+          taskElement.addEventListener("dragstart", dragStart);
+          taskElement.addEventListener("dragend", dragEnd);
+          column.appendChild(taskElement);
+        });
+      }
+
+      // Сохранение задачи
+      saveTaskButton.addEventListener("click", () => {
+        const taskName = taskInput.value.trim();
+        const taskDueDate = taskDate.value;
+
+        if (taskName && taskDueDate) {
+          const tasks = JSON.parse(localStorage.getItem(TASKS_KEY)) || [];
+          tasks.push({ name: taskName, date: taskDueDate, status: "todo" });
+          localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
+          loadTasks();
+          dialog.close();
         } else {
-          navigation.style.display = "flex"; // Показываем перед добавлением класса
-          setTimeout(() => {
-            navigation.classList.add("show");
-          }, 10); // Небольшая задержка для запуска анимации
+          alert("Введите название задачи и дату!");
         }
       });
+
+      // Удаление задачи
+      function deleteTask(index) {
+        const tasks = JSON.parse(localStorage.getItem(TASKS_KEY)) || [];
+        tasks.splice(index, 1);
+        localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
+        loadTasks();
+      }
+
+      // Drag-and-Drop
+      let draggedTask = null;
+
+      function dragStart(event) {
+        draggedTask = this;
+        setTimeout(() => this.classList.add("invisible"), 0);
+      }
+
+      function dragEnd() {
+        this.classList.remove("invisible");
+        draggedTask = null;
+      }
+
+      columns.forEach((column) => {
+        column.addEventListener("dragover", (event) => event.preventDefault());
+        column.addEventListener("drop", function () {
+          const tasks = JSON.parse(localStorage.getItem(TASKS_KEY)) || [];
+          const taskIndex = draggedTask.dataset.index;
+          tasks[taskIndex].status = this.dataset.status;
+          localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
+          loadTasks();
+        });
+      });
+
+      // Экспорт задач в ICS
+      function exportToICS() {
+        const tasks = JSON.parse(localStorage.getItem(TASKS_KEY)) || [];
+        if (!tasks.length) {
+          alert("Нет задач для экспорта!");
+          return;
+        }
+
+        let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\n";
+        tasks.forEach((task, index) => {
+          const dueDate = new Date(task.date)
+            .toISOString()
+            .replace(/[-:]/g, "")
+            .split(".")[0];
+          icsContent += `
+BEGIN:VEVENT
+UID:${index}@todoapp
+DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").split(".")[0]}
+SUMMARY:${task.name}
+DTSTART:${dueDate}
+END:VEVENT
+          `.trim();
+        });
+        icsContent += "\nEND:VCALENDAR";
+
+        const blob = new Blob([icsContent], { type: "text/calendar" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "tasks.ics";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      // Инициализация
+      document.addEventListener("DOMContentLoaded", loadTasks);
 
       dialog.addEventListener("click", (event) => {
         if (event.target === dialog) {
@@ -117,5 +221,20 @@
         }
       });
     </script>
+    <style>
+      .invisible {
+        opacity: 0;
+      }
+      .column {
+        border: 1px dashed #ccc;
+        padding: 10px;
+        margin: 10px;
+        min-height: 100px;
+        flex: 1;
+      }
+      .todo {
+        display: flex;
+      }
+    </style>
   </body>
 </html>
