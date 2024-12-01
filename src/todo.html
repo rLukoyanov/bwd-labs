@@ -47,10 +47,15 @@
     </header>
 
     <main>
-      <button onclick="window.addTaskDialog.showModal()">
+      <button
+        style="margin-top: 8px"
+        onclick="window.addTaskDialog.showModal()"
+      >
         Добавить задачу
       </button>
-      <button onclick="exportToICS()">Экспортировать задачи</button>
+      <button style="margin-top: 8px" onclick="exportToICS()">
+        Экспортировать задачи
+      </button>
       <div id="tasks" class="todo">
         <div class="column" data-status="todo">
           <h2>Сделать</h2>
@@ -92,6 +97,22 @@
       const saveTaskButton = document.getElementById("saveTaskButton");
       const columns = document.querySelectorAll(".column");
       const TASKS_KEY = "tasks";
+      const hamburger = document.getElementById("hamburger");
+      const navigation = document.getElementById("navigation");
+
+      hamburger.addEventListener("click", () => {
+        hamburger.classList.toggle("is-active");
+
+        // Убираем/добавляем класс show с небольшим временем задержки
+        if (navigation.classList.contains("show")) {
+          navigation.classList.remove("show");
+        } else {
+          navigation.style.display = "flex"; // Показываем перед добавлением класса
+          setTimeout(() => {
+            navigation.classList.add("show");
+          }, 10); // Небольшая задержка для запуска анимации
+        }
+      });
 
       // Загружаем задачи из localStorage
       function loadTasks() {
@@ -186,23 +207,40 @@
           return;
         }
 
-        let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\n";
+        // Начало файла календаря
+        let icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+CALSCALE:GREGORIAN
+PRODID:-//My Todo App//EN
+`;
+
         tasks.forEach((task, index) => {
-          const dueDate = new Date(task.date)
+          const dueDate = new Date(task.date);
+          const dtstart = dueDate
             .toISOString()
             .replace(/[-:]/g, "")
             .split(".")[0];
-          icsContent += `
+          const dtstamp = new Date()
+            .toISOString()
+            .replace(/[-:]/g, "")
+            .split(".")[0];
+
+          icsContent +=
+            `
 BEGIN:VEVENT
 UID:${index}@todoapp
-DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").split(".")[0]}
+DTSTAMP:${dtstamp}
+DTSTART:${dtstart}
 SUMMARY:${task.name}
-DTSTART:${dueDate}
+DESCRIPTION:Статус: ${task.status}
 END:VEVENT
-          `.trim();
+    `.trim() + "\n";
         });
-        icsContent += "\nEND:VCALENDAR";
 
+        // Конец файла календаря
+        icsContent += "END:VCALENDAR";
+
+        // Скачивание файла
         const blob = new Blob([icsContent], { type: "text/calendar" });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
